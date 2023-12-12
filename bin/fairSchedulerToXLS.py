@@ -5,7 +5,7 @@ import argparse
 
 
 def parse_users(elem):
-    """Parse user elements and return a list of dictionaries."""
+    """Capture user elements and return a list of user dictionaries."""
     users = []
     if elem.tag == 'user':
         user = {'name': elem.attrib.get('name')}
@@ -19,7 +19,7 @@ def parse_users(elem):
 
 
 def parse_queues(elem, parent_name=''):
-    """Parse queue elements and return a list of dictionaries."""
+    """Capture queue elements from xml and return a list of dictionaries."""
     queues = []
     if elem.tag == 'queue':
         queue = {'name': elem.attrib.get('name'), 'parent': parent_name}
@@ -34,7 +34,8 @@ def parse_queues(elem, parent_name=''):
 
 
 def parse_queue_resources(elem):
-    """Parse queue elements for specific resource information."""
+    """Currently this function is targeting capture of Max, Min, Memory, Vcores and Weights to compile into
+       one Tab in the xlsx file. """
     queue_resources = []
     if elem.tag == 'queue':
         queue_resource = {'name': elem.attrib.get('name')}
@@ -57,6 +58,8 @@ def parse_queue_resources(elem):
     return queue_resources
 
 
+# Calculate_totals tallies up the total MaxMemory and MaxVcores. Not sure if this is useful information.
+# So this is included in the scripted but currently commented out in execution.
 def calculate_totals(queue_resources_data):
     total_memory, total_vcores = 0, 0
     memory_pattern = re.compile(r'(\d+) mb')
@@ -74,7 +77,7 @@ def calculate_totals(queue_resources_data):
     return {'name': 'Total', 'maxMemory': f'{total_memory} mb', 'maxVcores': f'{total_vcores} vcores', 'weight': ''}
 
 
-# Parcing out the schedular xml
+# Parsing out the schedular xml into User_Data, Queue_Data, Queue_resources.
 def parse_xml(xml_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -93,7 +96,7 @@ def parse_xml(xml_file):
     return users_data, queues_data, queue_resources_data
 
 
-# write data to Excel in different sheets
+# Write data to Excel in different sheets
 def write_to_excel(users_data, queues_data, queue_resources_data, excel_file):
     with pd.ExcelWriter(excel_file) as writer:
         pd.DataFrame(queue_resources_data).to_excel(writer, sheet_name='Queue Resources', index=False)
@@ -104,6 +107,9 @@ def write_to_excel(users_data, queues_data, queue_resources_data, excel_file):
 # Main execution
 
 def main():
+    # Command Help and argument parser.
+    #  fairSchedulerToXLS.py [-h] -x XML_FILE -o EXCEL_FILE
+
     commandparser = argparse.ArgumentParser(description="Parse YARN Fair Scheduler XML and output to Excel.")
     commandparser.add_argument("-x", "--xml", dest="xml_file", required=True,
                                help="Path to the Fair Scheduler XML file")
@@ -112,7 +118,9 @@ def main():
 
     userargs = commandparser.parse_args()
 
+    # Capture the XML elements.
     users_data, queues_data, queue_resources_data = parse_xml(userargs.xml_file)
+    # Store XML elements into tabbed spreadsheet.
     write_to_excel(users_data, queues_data, queue_resources_data, userargs.excel_file)
 
 

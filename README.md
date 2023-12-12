@@ -27,7 +27,7 @@ optional arguments:
   -o EXCEL_FILE, --output EXCEL_FILE
                         Path for the output Excel file
 
-## Usage for airSchedulerToXLS
+## Usage for fairSchedulerToXLS
 
 ```bash
 usage: fairSchedulerToXLS.py [-h] -x XML_FILE -o EXCEL_FILE

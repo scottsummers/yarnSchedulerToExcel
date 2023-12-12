@@ -29,6 +29,7 @@ optional arguments:
 
 ## Usage for airSchedulerToXLS
 
+```bash
 usage: fairSchedulerToXLS.py [-h] -x XML_FILE -o EXCEL_FILE
 
 Parse YARN Fair Scheduler XML and output to Excel.
@@ -39,6 +40,8 @@ optional arguments:
                         Path to the Fair Scheduler XML file
   -o EXCEL_FILE, --output EXCEL_FILE
                         Path for the output Excel file
+```
+
 ### Example: 
 
 ```bash

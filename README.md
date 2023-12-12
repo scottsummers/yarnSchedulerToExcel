@@ -13,7 +13,7 @@ Follow the instruction listed for running the fs2cs tool found: https://docs.clo
 You can install the libaries using pip:
 
 ```bash
-pip install pandas
+pip3 install pandas argparse
 ```
 
 usage: fairSchedulerToXLS.py [-h] -x XML_FILE -o EXCEL_FILE

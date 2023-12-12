@@ -4,7 +4,6 @@ import re
 import argparse
 
 
-
 def parse_users(elem):
     """Parse user elements and return a list of dictionaries."""
     users = []
@@ -33,6 +32,7 @@ def parse_queues(elem, parent_name=''):
         queues.append(queue)
     return queues
 
+
 def parse_queue_resources(elem):
     """Parse queue elements for specific resource information."""
     queue_resources = []
@@ -56,6 +56,7 @@ def parse_queue_resources(elem):
         queue_resources.extend(parse_queue_resources(child))
     return queue_resources
 
+
 def calculate_totals(queue_resources_data):
     total_memory, total_vcores = 0, 0
     memory_pattern = re.compile(r'(\d+) mb')
@@ -70,9 +71,7 @@ def calculate_totals(queue_resources_data):
         if vcores_match:
             total_vcores += int(vcores_match.group(1))
 
-    return {'name': 'Total', 'memory': f'{total_memory} mb', 'vcores': f'{total_vcores} vcores', 'weight': ''}
-
-
+    return {'name': 'Total', 'maxMemory': f'{total_memory} mb', 'maxVcores': f'{total_vcores} vcores', 'weight': ''}
 
 
 # Parcing out the schedular xml
@@ -87,10 +86,12 @@ def parse_xml(xml_file):
         queue_resources_data.extend(parse_queue_resources(elem))
 
     queue_resources_data = parse_queue_resources(root)
-    queue_resources_totals = calculate_totals(queue_resources_data)
-    queue_resources_data.append(queue_resources_totals)
+    # Optional call to cacluated the total resources from the maxMemory and maxVcores Columns.
+    # queue_resources_totals = calculate_totals(queue_resources_data)
+    # queue_resources_data.append(queue_resources_totals)
 
     return users_data, queues_data, queue_resources_data
+
 
 # write data to Excel in different sheets
 def write_to_excel(users_data, queues_data, queue_resources_data, excel_file):
@@ -111,8 +112,8 @@ def main():
 
     userargs = commandparser.parse_args()
 
-    general_properties, queue_properties = parse_xml(userargs.xml_file)
-    write_to_excel(general_properties, queue_properties, userargs.excel_file)
+    users_data, queues_data, queue_resources_data = parse_xml(userargs.xml_file)
+    write_to_excel(users_data, queues_data, queue_resources_data, userargs.excel_file)
 
 
 if __name__ == "__main__":
